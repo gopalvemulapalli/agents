@@ -1,3 +1,4 @@
+import os
 import gradio as gr
 from dotenv import load_dotenv
 from research_manager import ResearchManager
@@ -6,8 +7,10 @@ load_dotenv(override=True)
 
 
 async def run(query: str):
+    accumulated = ""
     async for chunk in ResearchManager().run(query):
-        yield chunk
+        accumulated += chunk
+        yield accumulated
 
 
 with gr.Blocks(theme=gr.themes.Default(primary_hue="sky")) as ui:
