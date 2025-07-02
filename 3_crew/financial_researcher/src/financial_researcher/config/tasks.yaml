@@ -14,6 +14,7 @@ research_task:
     all the requested aspects of {company}. Include specific facts, figures,
     and examples where relevant.
   agent: researcher
+  output_file: output/research.md
 
 analysis_task:
   description: >
@@ -32,3 +33,14 @@ analysis_task:
   context:
     - research_task
   output_file: output/report.md
+
+validation_task:
+  description: >
+    Validate the research of the financial researcher and verify its the latest information available as of today. The validation report should indcate whether the research is up to date and if not, provide a list of the latest information that is missing.
+  expected_output: >
+    A validation of the research and analysis of the financial researcher. The validation should be based on the latest information available as of today. The validation report should indcate whether the research is up to date and if not, provide a list of the latest information that is missing.  
+  agent: validator
+  context:
+    - research_task
+    - analysis_task
+  output_file: output/validation.md

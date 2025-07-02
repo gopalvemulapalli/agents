@@ -22,6 +22,14 @@ class ResearchCrew():
             verbose=True
         )
 
+    @agent
+    def validator(self) -> Agent:
+        return Agent(
+            config=self.agents_config['validator'],
+            verbose=True,
+            tools=[SerperDevTool()]
+        )
+
     @task
     def research_task(self) -> Task:
         return Task(
@@ -31,8 +39,13 @@ class ResearchCrew():
     @task
     def analysis_task(self) -> Task:
         return Task(
-            config=self.tasks_config['analysis_task'],
-            output_file='output/report.md'
+            config=self.tasks_config['analysis_task']
+        )
+
+    @task
+    def validation_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['validation_task']
         )
 
     @crew
