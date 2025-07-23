@@ -1,0 +1,351 @@
+```text
+Here's the complete code for the C# Web API project, organized into separate files and projects as requested.
+
+**CSharp_API.Domain (Domain Layer)**
+
+*   **User.cs:**
+```csharp
+namespace CSharp_API.Domain.Models
+{
+    public class User
+    {
+        public Guid Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string PhoneNumber { get; set; }
+    }
+}
+```
+
+*   **IUserRepository.cs:**
+```csharp
+using CSharp_API.Domain.Models;
+
+namespace CSharp_API.Domain.Repositories
+{
+    public interface IUserRepository
+    {
+        Task<User> GetByIdAsync(Guid id);
+        Task<IEnumerable<User>> GetAllAsync();
+        Task AddAsync(User user);
+        Task UpdateAsync(User user);
+        Task DeleteAsync(Guid id);
+        Task<User> GetByEmailAsync(string email);
+        Task<User> GetByPhoneNumberAsync(string phoneNumber);
+    }
+}
+```
+
+*   **IUnitOfWork.cs:**
+```csharp
+namespace CSharp_API.Domain
+{
+    public interface IUnitOfWork : IDisposable
+    {
+        Task<int> SaveChangesAsync();
+    }
+}
+```
+
+**CSharp_API.Infrastructure (Infrastructure Layer)**
+
+*   **DataContext.cs:**
+```csharp
+using CSharp_API.Domain.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace CSharp_API.Infrastructure.Data
+{
+    public class DataContext : DbContext
+    {
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        {
+        }
+
+        public DbSet<User> Users { get; set; }
+    }
+}
+```
+
+*   **UserRepository.cs:**
+```csharp
+using CSharp_API.Domain.Models;
+using CSharp_API.Domain.Repositories;
+using CSharp_API.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace CSharp_API.Infrastructure.Repositories
+{
+    public class UserRepository : IUserRepository
+    {
+        private readonly DataContext _context;
+
+        public UserRepository(DataContext context)
+        {
+            _context = context;
+        }
+
+        public async Task AddAsync(User user)
+        {
+            await _context.Users.AddAsync(user);
+        }
+
+        public async Task DeleteAsync(Guid id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            if (user != null)
+            {
+                _context.Users.Remove(user);
+            }
+        }
+
+        public async Task<IEnumerable<User>> GetAllAsync()
+        {
+            return await _context.Users.ToListAsync();
+        }
+
+        public async Task<User> GetByEmailAsync(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
+
+        public async Task<User> GetByIdAsync(Guid id)
+        {
+            return await _context.Users.FindAsync(id);
+        }
+
+        public async Task<User> GetByPhoneNumberAsync(string phoneNumber)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+        }
+
+        public async Task UpdateAsync(User user)
+        {
+            _context.Users.Update(user);
+        }
+    }
+}
+```
+
+*   **UnitOfWork.cs:**
+```csharp
+using CSharp_API.Domain;
+using CSharp_API.Infrastructure.Data;
+
+namespace CSharp_API.Infrastructure
+{
+    public class UnitOfWork : IUnitOfWork
+    {
+        private readonly DataContext _context;
+
+        public UnitOfWork(DataContext context)
+        {
+            _context = context;
+        }
+
+        public void Dispose()
+        {
+            _context.Dispose();
+        }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+    }
+}
+```
+
+**CSharp_API.API (API Layer)**
+
+*   **Models/UserDto.cs:**
+```csharp
+using System.ComponentModel.DataAnnotations;
+
+namespace CSharp_API.API.Models
+{
+    public class UserDto
+    {
+        public Guid Id { get; set; }
+        [Required]
+        public string FirstName { get; set; }
+        [Required]
+        public string LastName { get; set; }
+        [EmailAddress]
+        public string Email { get; set; }
+        [Phone]
+        public string PhoneNumber { get; set; }
+    }
+}
+```
+
+*   **Controllers/UsersController.cs:**
+```csharp
+using Microsoft.AspNetCore.Mvc;
+using CSharp_API.Domain.Repositories;
+using CSharp_API.Domain;
+using CSharp_API.API.Models;
+using CSharp_API.Domain.Models;
+using Microsoft.AspNetCore.Authorization; // Import for authorization
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+
+namespace CSharp_API.API.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    //[Authorize] // Enable authorization for the controller
+    public class UsersController : ControllerBase
+    {
+        private readonly IUserRepository _userRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILogger<UsersController> _logger;
+        private readonly IMemoryCache _cache;
+        private const string UsersCacheKey = "usersList";
+
+        public UsersController(IUserRepository userRepository, IUnitOfWork unitOfWork, ILogger<UsersController> logger, IMemoryCache cache)
+        {
+            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
+            _logger = logger;
+            _cache = cache;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            if (_cache.TryGetValue(UsersCacheKey, out IEnumerable<UserDto> users))
+            {
+                _logger.LogInformation("Users retrieved from cache.");
+                return Ok(users);
+            }
+
+            var allUsers = await _userRepository.GetAllAsync();
+            var userDtos = allUsers.Select(u => new UserDto
+            {
+                Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                Email = u.Email,
+                PhoneNumber = u.PhoneNumber
+            });
+
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromSeconds(60))
+                .SetAbsoluteExpiration(TimeSpan.FromSeconds(3600))
+                .SetPriority(CacheItemPriority.Normal)
+                .SetSize(1024);
+
+            _cache.Set(UsersCacheKey, userDtos, cacheEntryOptions);
+            _logger.LogInformation("Users retrieved from database.");
+            return Ok(userDtos);
+        }
+
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUserById(Guid id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+
+            if (user == null)
+            {
+                _logger.LogWarning($"User with id {id} not found.");
+                return NotFound();
+            }
+
+            var userDto = new UserDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            return Ok(userDto);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state.");
+                return BadRequest(ModelState);
+            }
+
+            var user = new User
+            {
+                FirstName = userDto.FirstName,
+                LastName = userDto.LastName,
+                Email = userDto.Email,
+                PhoneNumber = userDto.PhoneNumber,
+                Id = Guid.NewGuid()
+            };
+
+            await _userRepository.AddAsync(user);
+            await _unitOfWork.SaveChangesAsync();
+
+            // Invalidate cache
+            _cache.Remove(UsersCacheKey);
+
+            return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, userDto);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(Guid id, [FromBody] UserDto userDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogError("Invalid model state.");
+                return BadRequest(ModelState);
+            }
+
+            var existingUser = await _userRepository.GetByIdAsync(id);
+            if (existingUser == null)
+            {
+                _logger.LogWarning($"User with id {id} not found.");
+                return NotFound();
+            }
+
+            existingUser.FirstName = userDto.FirstName;
+            existingUser.LastName = userDto.LastName;
+            existingUser.Email = userDto.Email;
+            existingUser.PhoneNumber = userDto.PhoneNumber;
+
+            await _userRepository.UpdateAsync(existingUser);
+            await _unitOfWork.SaveChangesAsync();
+
+            // Invalidate cache
+            _cache.Remove(UsersCacheKey);
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(Guid id)
+        {
+            var existingUser = await _userRepository.GetByIdAsync(id);
+            if (existingUser == null)
+            {
+                _logger.LogWarning($"User with id {id} not found.");
+                return NotFound();
+            }
+
+            await _userRepository.DeleteAsync(id);
+            await _unitOfWork.SaveChangesAsync();
+
+            // Invalidate cache
+            _cache.Remove(UsersCacheKey);
+
+            return NoContent();
+        }
+
+        [HttpGet("email/{email}")]
+        public async Task<IActionResult> GetUserByEmail(string email)
+        {
+            var user = await _userRepository.GetByEmailAsync(email);
+
+            if (user == null)
+            {

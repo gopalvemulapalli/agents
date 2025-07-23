@@ -1,0 +1,17 @@
+# Python program to calculate the first 10,000 terms of the series and multiply by 4
+
+def calculate_series(n_terms):
+    total = 0
+    for i in range(n_terms):
+        term = 1 / (2 * i + 1)  # Get the odd number in the series
+        if i % 2 == 0:
+            total += term  # Add when i is even (1, 5, 9, ...)
+        else:
+            total -= term  # Subtract when i is odd (3, 7, 11, ...)
+    return total * 4
+
+result = calculate_series(10000)
+print(result)
+
+# Output
+# 3.1414926535900345

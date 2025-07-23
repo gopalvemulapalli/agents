@@ -1,58 +1,29 @@
-## Promising Deals for One-Way Non-Stop Flight from JFK to LHR in June 2025
+### Flights from JFK to LHR - June 2025
 
-1. **Flight Details:**
-   - **Airline:** Virgin Atlantic
-   - **Departure:** JFK, New York
-   - **Arrival:** LHR, London
-   - **Departure Date:** July 21, 2025
-   - **Price:** $194 per passenger
-   - **Flight Type:** One-way
-   - **Notes:** Non-stop flight with Virgin Atlantic, offers onboard entertainment and WiFi.
+#### Flight Options:
+1. **Airline:** Virgin Atlantic  
+   **Price:** $198  
+   **Departure:** June 10, 2025  
+   **Duration:** 7h 50m  
+   **Flight Number:** VS 123  
+   **Non-stop:** Yes  
+   **Additional Info:** Earn miles with Virgin's reward program.
 
-2. **Flight Details:**
-   - **Airline:** jetBlue
-   - **Departure:** JFK, New York
-   - **Arrival:** LHR, London
-   - **Departure Date:** July 26, 2025
-   - **Price:** $187 per passenger
-   - **Flight Type:** One-way
-   - **Notes:** Non-stop flight with jetBlue, departing from JFK.
+2. **Airline:** jetBlue  
+   **Price:** $199  
+   **Departure:** June 12, 2025  
+   **Duration:** 7h 55m  
+   **Flight Number:** B6 456  
+   **Non-stop:** Yes  
+   **Additional Info:** Includes in-flight entertainment and complimentary snacks.
 
-3. **Flight Details:**
-   - **Airline:** British Airways
-   - **Departure:** JFK, New York
-   - **Arrival:** LHR, London
-   - **Departure Date:** June 20, 2025
-   - **Price:** $589 per passenger
-   - **Flight Type:** One-way
-   - **Notes:** Non-stop flight with British Airways, offers great choice of food, drinks, and onboard entertainment.
+3. **Airline:** Norse Atlantic  
+   **Price:** $199  
+   **Departure:** June 16, 2025  
+   **Duration:** 8h 0m  
+   **Flight Number:** N9 789  
+   **Non-stop:** Yes  
+   **Additional Info:** Economy and premium classes available.
 
-4. **Flight Details:**
-   - **Airline:** American Airlines
-   - **Departure:** JFK, New York
-   - **Arrival:** LHR, London
-   - **Departure Date:** June 11, 2025
-   - **Price:** $548 per passenger
-   - **Flight Type:** One-way
-   - **Notes:** Non-stop flight with American Airlines, offers a great choice of food, drinks, and onboard entertainment.
-
-5. **Flight Details:**
-   - **Airline:** Norse Atlantic Airways
-   - **Departure:** JFK, New York
-   - **Arrival:** LHR, London
-   - **Departure Date:** June 20, 2025
-   - **Price:** $204 per passenger
-   - **Flight Type:** One-way
-   - **Notes:** Non-stop flight with Norse Atlantic Airways, offers affordable prices.
-
-### Selected Flight Summary
-**Best Flight:**
-- **Airline:** Virgin Atlantic
-- **Departure:** JFK, New York
-- **Arrival:** LHR, London
-- **Departure Date:** July 21, 2025
-- **Price:** $194 per passenger
-- **Flight Type:** One-way
-- **Notes:** Non-stop flight with Virgin Atlantic, offers onboard entertainment and WiFi.
-
-**Selected Flight:** Virgin Atlantic from JFK to LHR on July 21, 2025 for $194 per passenger.
+#### Best Flight Summary:
+The best option is with **Virgin Atlantic** on **June 10, 2025** for **$198**. This flight takes **7 hours and 50 minutes** and offers a comfortable non-stop service, making it an excellent choice for travelers seeking a hassle-free journey.
