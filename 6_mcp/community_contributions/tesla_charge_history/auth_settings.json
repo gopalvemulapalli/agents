@@ -1,0 +1,13 @@
+{
+ "_comment":"set these tesla client id and secret in env settings file",
+ "client_id": "TESLA_CLIENT_ID", 
+ "client_secret": "TESLA_CLIENT_SECRET", 
+
+ "grant_type_cc": "client_credentials", 
+ "grant_type_auth": "authorization_code", 
+ "scope": "openid user_data vehicle_device_data vehicle_cmds vehicle_charging_cmds", 
+ "response_type": "code", "audience": "https://fleet-api.prd.eu.vn.cloud.tesla.com", 
+ "auth_url": "https://auth.tesla.com/oauth2/v3/authorize", 
+ "token_url": "https://auth.tesla.com/oauth2/v3/token"
+
+  }

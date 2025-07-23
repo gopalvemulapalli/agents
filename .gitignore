@@ -181,3 +181,8 @@ cython_debug/
 # Ignore Accounts database in capstone project
 6_mcp/accounts.db
 6_mcp/memory/*.db
+
+# ignore tesla
+6_mcp/community_contributions/tesla_charge_history/Invoices/
+6_mcp/community_contributions/tesla_charge_history/charging_history.json
+
